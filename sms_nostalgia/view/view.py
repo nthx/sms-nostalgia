@@ -1,4 +1,4 @@
-import logging
+import logging, sys
 log = logging.getLogger(__name__)
 
 import gtk
@@ -6,8 +6,8 @@ import hildon
 import sys
 import gobject
 
-from util import sms
-from model.sms import Sms
+from sms_nostalgia.util import sms
+from sms_nostalgia.model.sms import Sms
 
 
 log_format = "%(asctime)s %(levelname)-1.1s %(message)s"

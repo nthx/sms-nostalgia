@@ -5,7 +5,6 @@ import sys
 sys.path.append('..')
 
 
-from model.sms import Sms
 
 
 
@@ -13,6 +12,7 @@ def import_smses():
     """
     @returns all smses (Inbox + Sent)
     """
+    from sms_nostalgia.model.sms import Sms
 
     log.debug('importing sms...')
     
