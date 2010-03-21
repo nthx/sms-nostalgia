@@ -1,11 +1,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-import sys
-sys.path.append('..')
-
-
-
 
 
 def import_smses():

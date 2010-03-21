@@ -8,31 +8,15 @@ import gobject
 
 from sms_nostalgia.util import sms
 from sms_nostalgia.model.sms import Sms
-
-
-log_format = "%(asctime)s %(levelname)-1.1s %(message)s"
-log_datefmt = "%Y-%m-%d %H:%M:%S"
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format=log_format, datefmt=log_format)
-
-
-store = None
-all_smses = []
-all_smses_dict = {} #key=index in GtkList, value=Sms
+from sms_nostalgia.controller.controller import on_history_append, sms_clicked
 
 
 
-def on_history_append():
-    pass
+root = None
 
-
-def sms_clicked(treeview, path, view_column):
-    index = path[0]
-    log.debug('sms_clicked: %s' % index)
-    log.debug(all_smses_dict[index].as_text())
 
 
 def fill_in_window1(window):
-    table = create_table()
     list = create_list()
 
     # pack the table into the scrolled window 
@@ -74,21 +58,17 @@ def create_list():
 
 
 def get_model():
-    global all_smses, all_smses_dict
     store = gtk.ListStore(gobject.TYPE_STRING)
 
-    log.debug(all_smses)
-
     index = 0
-    for sms in all_smses:
+    for sms in root.all_smses:
         str = sms.as_text()
         store.insert(index, [str])
-        all_smses_dict[index] = sms
+        root.all_smses_dict[index] = sms
         index += 1
 
-    #store.connect("clicked", lambda: sms_clicked(i))
-
     return store
+
 
 def create_common_toolbar():
     # Create find toolbar
@@ -103,27 +83,6 @@ def create_common_toolbar():
     return toolbar
 
     
-def create_table():
-    # create a table of 10 by 10 squares. 
-    table = gtk.Table (10, 10, False)
-
-    # set the spacing to 10 on x and 10 on y 
-    table.set_row_spacings(10)
-    table.set_col_spacings(10)
-
-    table.show()
-
-    # this simply creates a grid of toggle buttons on the table
-    # to demonstrate the scrolled window. 
-    for i in range(10):
-        for j in range(10):
-            data_buffer = "button (%d,%d)\n" % (i, j)
-            button = gtk.ToggleButton(data_buffer)
-            table.attach(button, i, i+1, j, j+1)
-
-    return table
-
-
 def create_common_menu():
     pass
 
@@ -131,12 +90,10 @@ def app_quit(widget, data=None):
     gtk.main_quit()
 
 
-def start():
-    log.debug('start')
-    global all_smses
-
-    log.debug('building model')
-    all_smses = sms.import_smses()
+def build_windows(r):
+    log.debug('building windows..')
+    global root
+    root = r
 
 
     program = hildon.Program.get_instance()
@@ -153,17 +110,15 @@ def start():
     window1.add_toolbar(common_toolbar)
 
 
-
     #menu = create_common_menu()
-    #program.set_common_app_menu (menu)
-
+    #program.set_common_app_menu(menu)
 
 
     program.add_window(window1)
     window1.show_all()
 
 
-    program.set_can_hibernate (True)
+    program.set_can_hibernate(True)
     gtk.main()
 
 
