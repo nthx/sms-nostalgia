@@ -5,8 +5,10 @@ log = logging.getLogger(__name__)
 
 class Sms(object):
 
+    TYPE_INBOX = 0
+    TYPE_SENT = 1
 
-    def __init__(self, sender, content, type, display_name=None):
+    def __init__(self, sender, content, type, when, display_name=None):
 
         self.sender = sender
         self.content = content

@@ -19,10 +19,7 @@ class Root(object):
 
     def build_data(self):
         log.debug('building data..')
+
+
         self.all_smses = import_smses()
-
-
-        os.listdir('.')
-
-
 
