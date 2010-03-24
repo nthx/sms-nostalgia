@@ -59,36 +59,31 @@ class WindowSms(object):
             gtk.ICON_SIZE_LARGE_TOOLBAR),
             "Forward")
         toolbar.insert(self.toolbar_next, 1)
+
+        self.toolbar_prev.connect("clicked", lambda x: self.controller.load_prev_sms())
+        self.toolbar_next.connect("clicked", lambda x: self.controller.load_next_sms())
         return toolbar
 
 
-    def _update_labels(self, index, sms):
+    def _update_labels(self, sms):
         self.label_name.set_label(sms.name)
         self.label_phone.set_label(sms.phone)
         self.label_message.set_label(sms.message)
 
 
-    def show_sms(self, index, sms):
+    def show_sms(self):
+        sms = self.controller.current_sms
         log.debug(sms.as_text())
+
         if self.window:
             log.debug('exists.. updating labels')
-            #self.window.remove_toolbar(self.toolbar) #unfrotunately I have no
-            #other way of re-connecting "clicked" event. So I destroy/create
-            #toolbar all the time
-            self.toolbar = self.create_toolbar()
-            self.toolbar.show_all()
-            self.window.add_toolbar(self.toolbar)
-            self._update_labels(index, sms)
-            self.toolbar_prev.connect("clicked", lambda x: self.controller.load_prev_sms(index, sms))
-            self.toolbar_next.connect("clicked", lambda x: self.controller.load_next_sms(index, sms))
+            self._update_labels(sms)
 
         else:
             log.debug('new.. creating labels')
             self.window = self.build()
-            self._update_labels(index, sms)
+            self._update_labels(sms)
 
-            self.toolbar_prev.connect("clicked", lambda x: self.controller.load_prev_sms(index, sms))
-            self.toolbar_next.connect("clicked", lambda x: self.controller.load_next_sms(index, sms))
             self.window.show_all()
 
 
