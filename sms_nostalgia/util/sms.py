@@ -18,11 +18,11 @@ def parse(path, type):
     result = []
     for line in csv.reader(file, delimiter=';', quotechar='"'):
         if line[0] == 'sms' and line[1] == 'submit':
-            sms = Sms(sender=line[3],
-                      content=line[7],
+            sms = Sms(phone=line[3],
+                      message=line[7],
                       type=type, 
                       when=line[5],
-                      display_name=line[3])
+                      name=line[3])
             result.append(sms)
     log.debug('Imported %s of %s' % (len(result), type))
     return result
