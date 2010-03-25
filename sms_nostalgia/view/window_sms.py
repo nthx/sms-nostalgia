@@ -66,7 +66,7 @@ class WindowSms(object):
 
 
     def _update_labels(self, sms):
-        self.label_name.set_label(sms.name)
+        self.label_name.set_label(sms.display_name())
         self.label_phone.set_label(sms.phone)
         self.label_message.set_label(sms.message)
 

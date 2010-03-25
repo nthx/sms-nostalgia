@@ -31,7 +31,6 @@ class WindowMain(object):
         return window
 
 
-
     def fill_panable_area(self, window):
         sms_list = self.create_sms_list()
 
@@ -67,7 +66,6 @@ class WindowMain(object):
         iter = findSelect.append()
         findSelect.set(iter, 0, "Baz")
         return findSelect
-
 
 
     def create_sms_list(self):

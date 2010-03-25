@@ -1,31 +1,69 @@
 import logging
 log = logging.getLogger(__name__)
 
+from sms_nostalgia.model.contact import Contact
 from sms_nostalgia.model.sms import Sms
+
+from sms_nostalgia.lib.contacts import ContactsAPI
 
 import csv
 import os
 
 
 
-def parse(path, type):
+def parse(path):
     file = None
     if os.path.exists(path) and os.path.isfile(path):
         file = open(path)
     else:
         return []
 
-    result = []
+    smses = []
     for line in csv.reader(file, delimiter=';', quotechar='"'):
-        if line[0] == 'sms' and line[1] == 'submit':
-            sms = Sms(phone=line[3],
-                      message=line[7],
-                      type=type, 
-                      when=line[5],
-                      name=line[3])
-            result.append(sms)
-    log.debug('Imported %s of %s' % (len(result), type))
-    return result
+        sms = sms_parser_by_type(line[0], line[1], line)
+        if sms: smses.append(sms)
+
+    log.debug('Imported %s' % (len(smses)))
+    return smses
+
+
+def sms_parser_by_type(msg_type, sms_type, line):
+    if 'sms' != msg_type:
+        #mms not supported
+        return
+
+    if sms_type == 'submit':
+        class SentParser(object):
+            def parse(self, line):
+                return Sms(
+                    phone=line[3],
+                    message=line[7],
+                    type=Sms.TYPE_SENT, 
+                    when=line[5])
+        return SentParser().parse(line)
+
+    elif sms_type == 'deliver':
+        class InboxParser(object):
+            def parse(self, line):
+                return Sms(
+                    phone=line[2],
+                    message=line[7],
+                    type=Sms.TYPE_INBOX, 
+                    when=line[5])
+        return InboxParser().parse(line)
+
+    else:
+        log.debug('unknown sms type: %s' % sms_type)
+
+
+
+def retrieve_names_from_addressbook(smses):
+    contacts_by_phone = ContactsAPI.sort_by_phone()
+    for sms in smses:
+        if sms.phone in contacts_by_phone:
+            sms.contact = contacts_by_phone[sms.phone]
+            sms.name = sms.contact.name()
+    return smses
 
 
 def import_smses():
@@ -36,8 +74,11 @@ def import_smses():
     log.debug('importing sms..')
 
 
-    result = []
-    result.extend(parse(os.path.join('data', 'inbox.csv'), Sms.TYPE_INBOX))
-    result.extend(parse(os.path.join('data', 'sent.csv'), Sms.TYPE_SENT))
-    return result
+    smses = []
+    smses.extend(parse(os.path.join('data', 'inbox.csv')))
+    smses.extend(parse(os.path.join('data', 'sent.csv')))
+
+    smses = retrieve_names_from_addressbook(smses)
+
+    return smses
 
