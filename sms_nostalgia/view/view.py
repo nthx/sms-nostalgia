@@ -38,6 +38,7 @@ class View(object):
 
 
     def start(self):
+        log.debug('started')
         gtk.main()
         
 

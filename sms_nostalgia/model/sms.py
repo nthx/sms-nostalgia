@@ -18,6 +18,7 @@ class Sms(object):
         self.message = message
         self.type = type
         self.name = name
+        self.when = when
         self.contact = None #Will be setup later if contact found in eBook
 
 
@@ -27,6 +28,14 @@ class Sms(object):
 
     def display_type(self):
         return self.TYPES.get(self.type)
+
+
+    def sent(self):
+        return self.type == self.TYPE_SENT
+
+
+    def received(self):
+        return self.type == self.TYPE_INBOX
 
 
     def as_text(self):

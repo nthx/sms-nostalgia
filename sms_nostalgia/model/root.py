@@ -23,3 +23,6 @@ class Root(object):
 
         self.all_smses = import_smses()
 
+        log.debug('sorting..')
+        self.all_smses = sorted(self.all_smses, key=lambda sms: sms.when, reverse=True)
+

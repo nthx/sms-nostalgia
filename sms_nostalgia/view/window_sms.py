@@ -19,9 +19,7 @@ class WindowSms(object):
     def build(self):
         log.debug('building sms window..')
 
-
         window = hildon.StackableWindow()
-        window.set_title("Sms Details")
 
         self.toolbar = self.create_toolbar()
         window.add_toolbar(self.toolbar)
@@ -31,12 +29,17 @@ class WindowSms(object):
 
         self.label_name = gtk.Label("")
         self.label_phone = gtk.Label("")
+        self.label_when = gtk.Label("")
         self.label_message = gtk.Label("")
         self.label_message.set_line_wrap(True)
+
+        for label in [self.label_name, self.label_phone, self.label_when, self.label_message]:
+            label.set_alignment(0, 0)
 
         vbox = gtk.VBox(False, 0)
         vbox.pack_start(self.label_name, False, False, 0)
         vbox.pack_start(self.label_phone, False, False, 0)
+        vbox.pack_start(self.label_when, False, False, 0)
         vbox.pack_start(self.label_message, False, True, 0)
 
         align.add(vbox)
@@ -68,7 +71,13 @@ class WindowSms(object):
     def _update_labels(self, sms):
         self.label_name.set_label(sms.display_name())
         self.label_phone.set_label(sms.phone)
+        self.label_when.set_label(sms.when)
         self.label_message.set_label(sms.message)
+        if sms.display_name() == sms.phone:
+            self.label_name.hide()
+        else:
+            self.label_name.show()
+        self.window.set_title(sms.display_type())
 
 
     def show_sms(self):
@@ -76,11 +85,9 @@ class WindowSms(object):
         log.debug(sms.as_text())
 
         if self.window:
-            log.debug('exists.. updating labels')
             self._update_labels(sms)
 
         else:
-            log.debug('new.. creating labels')
             self.window = self.build()
             self._update_labels(sms)
 
