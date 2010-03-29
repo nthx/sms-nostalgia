@@ -15,6 +15,8 @@ class WindowMain(object):
         self.view = view
         self.controller = controller
 
+        self.text_entry = None
+
         self.window = self.build()
 
 
@@ -27,7 +29,8 @@ class WindowMain(object):
 
         self.fill_panable_area(window)
 
-        window.add_toolbar(self.create_toolbar())
+        #window.add_toolbar(self.create_find_toolbar())
+        window.add_toolbar(self.create_autocomplete_toolbar())
         return window
 
 
@@ -40,10 +43,30 @@ class WindowMain(object):
         window.add(pannable_area)
 
 
-    def create_toolbar(self):
-        # Create find toolbar
+    def create_autocomplete_toolbar(self):
+        toolbar = gtk.Toolbar()
+
+        label = gtk.Label("Find:")
+        label.set_alignment(0, 0)
+
+        self.text_entry = gtk.Entry()
+
+        item1 = gtk.ToolItem()
+        item1.add(label)
+        item2 = gtk.ToolItem()
+        item2.add(self.text_entry)
+
+        toolbar.insert(item2, 0)
+        toolbar.insert(item1, 0)
+
+        self.text_entry.connect("key-release-event", self.controller.on_toolbar_search, None)
+        return toolbar
+
+
+    def create_find_toolbar(self):
         elem = self.toolbar_find_store()
         toolbar = hildon.FindToolbar("Find", elem, 0)
+        toolbar.highlight_entry(get_focus=True)
 
         # Set item on index 0 as the current active
         toolbar.set_active(0)
@@ -57,14 +80,9 @@ class WindowMain(object):
         # Create and populate history list model
         findSelect = gtk.ListStore(gobject.TYPE_STRING)
 
-        iter = findSelect.append()
-        findSelect.set(iter, 0, "Foo")
+        #iter = findSelect.append()
+        #findSelect.set(iter, 0, "Baz")
 
-        iter = findSelect.append()
-        findSelect.set(iter, 0, "Bar")
-
-        iter = findSelect.append()
-        findSelect.set(iter, 0, "Baz")
         return findSelect
 
 

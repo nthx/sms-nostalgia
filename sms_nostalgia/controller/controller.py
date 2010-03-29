@@ -35,6 +35,11 @@ class Controller(object):
         pass
 
 
+    def on_toolbar_search(self, entry, event, z):
+        log.debug('on_toolbar_search')
+        log.debug(entry.get_text())
+
+
     def sms_clicked(self, treeview, path, view_column):
         index = path[0]
         self.store_current_sms(self.root.all_smses_dict[index], index)

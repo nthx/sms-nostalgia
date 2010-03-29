@@ -37,8 +37,10 @@ class View(object):
         program.set_can_hibernate(True)
 
 
+
     def start(self):
         log.debug('started')
+        self.window_main.text_entry.grab_focus()
         gtk.main()
         
 
