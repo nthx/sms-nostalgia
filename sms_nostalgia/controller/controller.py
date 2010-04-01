@@ -8,7 +8,6 @@ import hildon
 
 class Controller(object):
 
-
     def __init__(self, root):
         self.root = root
         self.view = None #view setup later
@@ -38,11 +37,14 @@ class Controller(object):
     def on_toolbar_search(self, entry, event, z):
         log.debug('on_toolbar_search')
         log.debug(entry.get_text())
+        filtered = self.root.filter_smses(entry.get_text())
+        if filtered:
+            self.view.window_main.reload()
 
 
     def sms_clicked(self, treeview, path, view_column):
         index = path[0]
-        self.store_current_sms(self.root.all_smses_dict[index], index)
+        self.store_current_sms(self.root.sms_by_index[index], index)
 
         self.view.window_sms.show_sms()
 
@@ -50,15 +52,15 @@ class Controller(object):
     def load_prev_sms(self):
         index = self.current_sms_index
         if index > 0:
-            prev_sms = self.root.all_smses_dict[index-1]
+            prev_sms = self.root.sms_by_index[index-1]
             self.store_current_sms(prev_sms, index-1)
             self.view.window_sms.show_sms()
 
 
     def load_next_sms(self):
         index = self.current_sms_index
-        if index < len(self.root.all_smses_dict) - 1:
-            next_sms = self.root.all_smses_dict[index+1]
+        if index < len(self.root.sms_by_index) - 1:
+            next_sms = self.root.sms_by_index[index+1]
             self.store_current_sms(next_sms, index+1)
             self.view.window_sms.show_sms()
 

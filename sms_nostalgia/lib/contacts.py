@@ -1,15 +1,11 @@
 import logging
 log = logging.getLogger(__name__)
 
-
-
 import evolution
 
 
 
 class ContactsAPI(object):
-
-    
     #python evolution - not all phone numbers show up 
     #http://talk.maemo.org/showthread.php?p=581204
     name_attributes = [
@@ -40,7 +36,6 @@ class ContactsAPI(object):
         "telex",
         "tty",
     ]
-
 
 
     @classmethod

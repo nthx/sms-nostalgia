@@ -1,7 +1,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-
 import gobject
 import gtk
 import hildon
@@ -16,6 +15,7 @@ class WindowMain(object):
         self.controller = controller
 
         self.text_entry = None
+        self.tree_view = None
 
         self.window = self.build()
 
@@ -25,7 +25,6 @@ class WindowMain(object):
 
         window = hildon.StackableWindow()
         window.connect("destroy", self.controller.app_quit)
-
 
         self.fill_panable_area(window)
 
@@ -87,27 +86,30 @@ class WindowMain(object):
 
 
     def create_sms_list(self):
-        tree_view = hildon.GtkTreeView(gtk.HILDON_UI_MODE_NORMAL)
-        tree_view.connect("row-activated", self.controller.sms_clicked)
+        self.tree_view = hildon.GtkTreeView(gtk.HILDON_UI_MODE_NORMAL)
+        self.tree_view.connect("row-activated", self.controller.sms_clicked)
         renderer = gtk.CellRendererText()
         col = gtk.TreeViewColumn("Title", renderer, text=0)
 
-        tree_view.append_column(col)
+        self.tree_view.append_column(col)
 
-        tree_view.set_model(self.get_model())
+        self.reload()
 
-        return tree_view
+        return self.tree_view
 
 
     def get_model(self):
         store = gtk.ListStore(gobject.TYPE_STRING)
 
         index = 0
-        for sms in self.root.all_smses:
+        for sms in self.root.current_smses:
             str = sms.as_text()
             store.insert(index, [str])
-            self.root.all_smses_dict[index] = sms
+            self.root.sms_by_index[index] = sms
             index += 1
 
         return store
+
+    def reload(self):
+        self.tree_view.set_model(self.get_model())
 

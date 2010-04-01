@@ -38,6 +38,14 @@ class Sms(object):
         return self.type == self.TYPE_INBOX
 
 
+    def matches(self, text):
+        text = text and text.lower() or ''
+        return text in (self.phone and self.phone or '')\
+            or text in (self.message and self.message or '') \
+            or text in (self.name and self.name or '') \
+            or text in (self.when and self.when or '')
+
+
     def as_text(self):
         return '%s: %s; %s' % (self.display_type(), self.display_name(), self.message)
     
