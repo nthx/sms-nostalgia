@@ -100,15 +100,10 @@ class WindowMain(object):
 
     def get_model(self):
         store = gtk.ListStore(gobject.TYPE_STRING)
-
-        index = 0
-        for sms in self.root.current_smses:
-            str = sms.as_text()
-            store.insert(index, [str])
-            self.root.sms_by_index[index] = sms
-            index += 1
-
+        for index, sms in enumerate(self.root.current_smses):
+            store.insert(index, [sms.as_text()])
         return store
+
 
     def reload(self):
         self.tree_view.set_model(self.get_model())

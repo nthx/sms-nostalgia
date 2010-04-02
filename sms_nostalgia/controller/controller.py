@@ -15,9 +15,9 @@ class Controller(object):
         self.current_sms = None
 
 
-    def store_current_sms(self, sms, index):
+    def store_current_sms(self, sms):
         self.current_sms = sms
-        self.current_sms_index = index
+
 
     def app_quit(self, widget, data=None):
         gtk.main_quit()
@@ -40,28 +40,29 @@ class Controller(object):
         filtered = self.root.filter_smses(entry.get_text())
         if filtered:
             self.view.window_main.reload()
+            if self.root.current_smses:
+                self.current_sms = self.root.current_smses[0]
+            else:
+                self.current_sms = None
 
 
     def sms_clicked(self, treeview, path, view_column):
         index = path[0]
-        self.store_current_sms(self.root.sms_by_index[index], index)
-
+        self.store_current_sms(self.root.current_smses[index])
         self.view.window_sms.show_sms()
 
 
     def load_prev_sms(self):
-        index = self.current_sms_index
-        if index > 0:
-            prev_sms = self.root.sms_by_index[index-1]
-            self.store_current_sms(prev_sms, index-1)
+        index = self.root.current_smses.index(self.current_sms)
+        if index > 0 and len(self.root.current_smses):
+            self.store_current_sms(self.root.current_smses[index-1])
             self.view.window_sms.show_sms()
 
 
     def load_next_sms(self):
-        index = self.current_sms_index
-        if index < len(self.root.sms_by_index) - 1:
-            next_sms = self.root.sms_by_index[index+1]
-            self.store_current_sms(next_sms, index+1)
+        index = self.root.current_smses.index(self.current_sms)
+        if index < len(self.root.current_smses) - 1:
+            self.store_current_sms(self.root.current_smses[index+1])
             self.view.window_sms.show_sms()
 
 

@@ -13,7 +13,7 @@ class Root(object):
     def __init__(self):
         self.all_smses = []
         self.current_smses = []
-        self.sms_by_index = {} #key=index in GtkList, value=Sms
+
 
     def filter_smses(self, text):
         if not text or len(text) <= 2:

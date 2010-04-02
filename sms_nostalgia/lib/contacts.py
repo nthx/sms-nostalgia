@@ -2,7 +2,7 @@ import logging
 log = logging.getLogger(__name__)
 
 import evolution
-
+from sets import Set
 
 
 class ContactsAPI(object):
@@ -53,7 +53,7 @@ class ContactsAPI(object):
             
 
     @classmethod
-    def sort_by_phone(cls, contacts=None):
+    def group_by_phone(cls, contacts=None):
         log.debug('sort_by_phone')
         if not contacts:
             contacts = cls.get_all()
@@ -67,3 +67,6 @@ class ContactsAPI(object):
 
         return by_phone
         
+
+    def phone_variations(cls, phone):
+        pass

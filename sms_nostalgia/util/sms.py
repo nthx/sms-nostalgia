@@ -58,7 +58,7 @@ def sms_parser_by_type(msg_type, sms_type, line):
 
 
 def retrieve_names_from_addressbook(smses):
-    contacts_by_phone = ContactsAPI.sort_by_phone()
+    contacts_by_phone = ContactsAPI.group_by_phone()
     for sms in smses:
         if sms.phone in contacts_by_phone:
             sms.contact = contacts_by_phone[sms.phone]
