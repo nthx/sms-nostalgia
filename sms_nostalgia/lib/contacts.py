@@ -3,7 +3,9 @@ log = logging.getLogger(__name__)
 
 import evolution
 from sets import Set
+import re
 
+double_zero = re.compile('^00')
 
 class ContactsAPI(object):
     #python evolution - not all phone numbers show up 
@@ -63,10 +65,20 @@ class ContactsAPI(object):
             for phone in c.phones():
                 if phone in by_phone:
                     log.warning('duplicated phone: %s: %s' % (phone, c.uuid()))
-                by_phone[phone] = c
+                for p in cls.phone_variations(phone):
+                    #log.debug(p)
+                    by_phone[p] = c
 
         return by_phone
         
 
+    @classmethod
     def phone_variations(cls, phone):
-        pass
+        phones = Set()
+        phones.add(phone)
+        phones.add(phone.replace('+48', ''))
+        phones.add(phone.replace('+44', ''))
+        phones.add(phone.replace('+33', ''))
+        phones.add(double_zero.sub('', phone))
+        return list(phones)
+

@@ -41,8 +41,8 @@ class Sms(object):
     def matches(self, text):
         text = text and text.lower() or ''
         return text in (self.phone and self.phone or '')\
-            or text in (self.message and self.message or '') \
-            or text in (self.name and self.name or '') \
+            or text in (self.message and self.message.lower() or '') \
+            or text in (self.name and self.name.lower() or '') \
             or text in (self.when and self.when or '')
 
 
