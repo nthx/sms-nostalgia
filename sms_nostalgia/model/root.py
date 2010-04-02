@@ -16,8 +16,13 @@ class Root(object):
 
 
     def filter_smses(self, text):
+        if None != text and 0 == len(text):
+            self.current_smses = self.all_smses[:]
+            return True
+
         if not text or len(text) <= 2:
             return
+
         self.current_smses = [sms for sms in self.all_smses if sms.matches(text)]
         return True
 

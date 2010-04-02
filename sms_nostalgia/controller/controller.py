@@ -11,7 +11,6 @@ class Controller(object):
     def __init__(self, root):
         self.root = root
         self.view = None #view setup later
-
         self.current_sms = None
 
 
@@ -28,6 +27,7 @@ class Controller(object):
 
         self.view.window_sms.window.hide_all()
         self.view.window_sms.window = None
+        self.view.window_main.text_entry.grab_focus()
 
 
     def on_history_append(self):

@@ -57,6 +57,7 @@ class WindowMain(object):
 
         toolbar.insert(item2, 0)
         toolbar.insert(item1, 0)
+        self.text_entry.grab_focus()
 
         self.text_entry.connect("key-release-event", self.controller.on_toolbar_search, None)
         return toolbar
