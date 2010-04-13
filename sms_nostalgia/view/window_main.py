@@ -30,6 +30,7 @@ class WindowMain(object):
 
         #window.add_toolbar(self.create_find_toolbar())
         window.add_toolbar(self.create_autocomplete_toolbar())
+        window.set_title('Sms Nostalgia')
         return window
 
 

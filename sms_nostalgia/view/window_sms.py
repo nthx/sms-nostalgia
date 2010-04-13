@@ -32,6 +32,9 @@ class WindowSms(object):
         self.label_when = gtk.Label("")
         self.label_message = gtk.Label("")
         self.label_message.set_line_wrap(True)
+        self.photo = gtk.Image()
+        self.photo.set_alignment(0, 0)
+        self.photo.set_padding(0, 0)
 
         for label in [self.label_name, self.label_phone, self.label_when, self.label_message]:
             label.set_alignment(0, 0)
@@ -40,6 +43,7 @@ class WindowSms(object):
         vbox.pack_start(self.label_name, False, False, 0)
         vbox.pack_start(self.label_phone, False, False, 0)
         vbox.pack_start(self.label_when, False, False, 0)
+        vbox.pack_start(self.photo, False, False, 0)
         vbox.pack_start(self.label_message, False, True, 0)
 
         align.add(vbox)
@@ -69,6 +73,12 @@ class WindowSms(object):
 
 
     def _update_labels(self, sms):
+        has_icon = sms.contact and sms.contact.has_icon() or False
+        if has_icon:
+            self.photo.set_from_file(sms.contact.ico_path)
+        else:
+            self.photo.clear()
+
         self.label_name.set_label(sms.display_name())
         self.label_phone.set_label(sms.phone)
         self.label_when.set_label(sms.when)
@@ -77,6 +87,7 @@ class WindowSms(object):
             self.label_name.hide()
         else:
             self.label_name.show()
+
         self.window.set_title(sms.display_type())
 
 

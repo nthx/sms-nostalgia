@@ -60,14 +60,16 @@ class ContactsAPI(object):
         if not contacts:
             contacts = cls.get_all()
 
+
         by_phone = {} #dict by phone number
         for c in contacts:
             for phone in c.phones():
                 if phone in by_phone:
-                    log.warning('duplicated phone: %s: %s' % (phone, c.uuid()))
+                    log.warning('duplicated phone: %s: %s %s' % (phone, c.uuid(), c.name()))
                 for p in cls.phone_variations(phone):
                     #log.debug(p)
                     by_phone[p] = c
+        log.debug('all phones len: %s' % len(by_phone))
 
         return by_phone
         
