@@ -44,8 +44,8 @@ class ContactsAPI(object):
     def get_all(cls):
         from sms_nostalgia.model.contact import Contact
         log.debug('get_all')
-        abook = evolution.ebook.open_addressbook("default")
-        all_contacts = abook.get_all_contacts()
+        ebook = evolution.ebook.open_addressbook("default")
+        all_contacts = ebook.get_all_contacts()
 
         contacts = []
         for econtact in all_contacts:
