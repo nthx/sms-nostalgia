@@ -4,6 +4,7 @@ log = logging.getLogger(__name__)
 from sms_nostalgia.lib.contacts import ContactsAPI
 import sms_nostalgia.lib.vobject as vobject
 
+import gtk
 
 
 class Contact(object):
@@ -13,6 +14,7 @@ class Contact(object):
         self.vcard = None
         self.has_ico = None
         self.ico_path = None
+        self.ico_pixbuf = None
 
 
     def uuid(self):
@@ -54,21 +56,17 @@ class Contact(object):
 
 
     def has_icon(self):
-        log.debug('has_icon: %s' % self.name())
         if self.has_ico in (True, False):
-            log.debug(self.has_ico)
             return self.has_ico
-        log.debug('not yet know..')
 
         for line in self.get_vcard().lines():
             if 'PHOTO' == line.name:
                 self.has_ico = True
                 self.ico_path = line.value.replace('file://', '')
-                log.debug(self.ico_path)
-                log.debug(self.has_ico)
+                #self.ico_pixbuf = gtk.gdk.pixbuf_new_from_file(self.ico_path)
+                self.ico_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(self.ico_path, 48, 48)
                 return self.has_ico
 
-        log.debug(False)
         self.has_ico = False
 
 

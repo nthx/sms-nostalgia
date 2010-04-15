@@ -1,6 +1,9 @@
 import logging
 log = logging.getLogger(__name__)
 
+import cgi
+import datetime
+import gtk
 
 
 class Sms(object):
@@ -11,6 +14,10 @@ class Sms(object):
     TYPES = {}
     TYPES[TYPE_INBOX] = 'Inbox'
     TYPES[TYPE_SENT] = 'Sent'
+
+    TYPES_ICONS = {}
+    TYPES_ICONS[TYPE_INBOX] = gtk.gdk.pixbuf_new_from_file_at_size('/usr/share/icons/hicolor/48x48/hildon/general_sms.png', 48, 48)
+    TYPES_ICONS[TYPE_SENT] = gtk.gdk.pixbuf_new_from_file_at_size('/usr/share/icons/hicolor/48x48/hildon/chat_replied_sms.png', 48, 48)
 
 
     def __init__(self, phone, message, type, when, name=None):
@@ -30,6 +37,10 @@ class Sms(object):
         return self.TYPES.get(self.type)
 
 
+    def get_type_ico(self):
+        return self.TYPES_ICONS.get(self.type)
+
+
     def sent(self):
         return self.type == self.TYPE_SENT
 
@@ -47,7 +58,22 @@ class Sms(object):
 
 
     def as_text(self):
-        return '%s: %s; %s' % (self.display_type(), self.display_name(), self.message)
+        return '%s: n%s' % (self.display_name(), self.message)
+
+    
+    def as_html(self):
+        when = self.when
+        try:
+            when = datetime.datetime.strptime(self.when, '%Y.%m.%d %H:%M')
+            when = when.strftime('%Y.%m.%d | %H:%M')
+        except Exception, e:
+            log.debug(e)
+            pass
+        return """\
+<span weight="bold">%s</span> <span size="x-small" weight="light" foreground="#BBBBBB"><sup>%s</sup></span>
+<span size="x-small" foreground="#BBBBBB">%s</span>""" \
+            % (cgi.escape(self.display_name()), when, cgi.escape(self.message))
+
     
     __str__ = as_text
     __repr__ = as_text

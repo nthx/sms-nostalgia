@@ -4,7 +4,7 @@ log = logging.getLogger(__name__)
 import gobject
 import gtk
 import hildon
-
+import sys
 
 
 class WindowMain(object):
@@ -28,7 +28,6 @@ class WindowMain(object):
 
         self.fill_panable_area(window)
 
-        #window.add_toolbar(self.create_find_toolbar())
         window.add_toolbar(self.create_autocomplete_toolbar())
         window.set_title('Sms Nostalgia')
         return window
@@ -64,36 +63,46 @@ class WindowMain(object):
         return toolbar
 
 
-    def create_find_toolbar(self):
-        elem = self.toolbar_find_store()
-        toolbar = hildon.FindToolbar("Find", elem, 0)
-        toolbar.highlight_entry(get_focus=True)
-
-        # Set item on index 0 as the current active
-        toolbar.set_active(0)
-
-        # Attach a callback to handle "history-append" signal
-        toolbar.connect_after("history-append", self.controller.on_history_append, None)
-        return toolbar
-
-
-    def toolbar_find_store(self):
-        # Create and populate history list model
-        findSelect = gtk.ListStore(gobject.TYPE_STRING)
-
-        #iter = findSelect.append()
-        #findSelect.set(iter, 0, "Baz")
-
-        return findSelect
-
-
     def create_sms_list(self):
         self.tree_view = hildon.GtkTreeView(gtk.HILDON_UI_MODE_NORMAL)
         self.tree_view.connect("row-activated", self.controller.sms_clicked)
-        renderer = gtk.CellRendererText()
-        col = gtk.TreeViewColumn("Title", renderer, text=0)
 
-        self.tree_view.append_column(col)
+        def get_type_ico(column, cell, model, iter):
+            sms = model.get_value(iter, 0)
+            cell.set_property('pixbuf', sms.get_type_ico())
+
+        def get_face_ico(column, cell, model, iter):
+            sms = model.get_value(iter, 0)
+            has_icon = sms.contact and sms.contact.has_icon() or False
+            if has_icon:
+                cell.set_property('pixbuf', sms.contact.ico_pixbuf)
+            else:
+                cell.set_property('pixbuf', None)
+
+        def get_sms(column, cell, model, iter):
+            sms = model.get_value(iter, 0)
+            cell.set_property('markup', sms.as_html())
+
+
+        state_rend = gtk.CellRendererPixbuf()
+        state_col = gtk.TreeViewColumn("type", state_rend)
+        state_col.set_cell_data_func(state_rend, get_type_ico)
+        state_rend.set_property('width', 52)
+
+        sms_rend = gtk.CellRendererText()
+        face_rend = gtk.CellRendererPixbuf()
+
+        sms_col = gtk.TreeViewColumn("sms", markup=0)
+
+        sms_col.pack_start(face_rend)
+        sms_col.pack_end(sms_rend, expand=True)
+
+        sms_col.set_cell_data_func(face_rend, get_face_ico)
+        sms_col.set_cell_data_func(sms_rend, get_sms)
+
+        self.tree_view.append_column(state_col)
+        self.tree_view.append_column(sms_col)
+
 
         self.reload()
 
@@ -101,9 +110,9 @@ class WindowMain(object):
 
 
     def get_model(self):
-        store = gtk.ListStore(gobject.TYPE_STRING)
+        store = gtk.ListStore(object)
         for index, sms in enumerate(self.root.current_smses):
-            store.insert(index, [sms.as_text()])
+            store.insert(index, [sms])
         return store
 
 

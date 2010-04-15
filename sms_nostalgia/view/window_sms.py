@@ -6,7 +6,6 @@ import gtk
 import hildon
 
 
-
 class WindowSms(object):
 
     def __init__(self, view, controller):
@@ -25,7 +24,7 @@ class WindowSms(object):
         window.add_toolbar(self.toolbar)
 
 
-        align = gtk.Alignment()
+        #align = gtk.Alignment()
 
         self.label_name = gtk.Label("")
         self.label_phone = gtk.Label("")
@@ -46,8 +45,10 @@ class WindowSms(object):
         vbox.pack_start(self.photo, False, False, 0)
         vbox.pack_start(self.label_message, False, True, 0)
 
-        align.add(vbox)
-        window.add(align)
+        #align.add(vbox)
+        pannable_area = hildon.PannableArea()
+        pannable_area.add_with_viewport(vbox)
+        window.add(pannable_area)
 
         window.connect("destroy", self.controller.sms_details_closed)
         return window

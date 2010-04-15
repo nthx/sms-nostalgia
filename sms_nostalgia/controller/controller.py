@@ -18,7 +18,7 @@ class Controller(object):
         self.current_sms = sms
 
 
-    def app_quit(self, widget, data=None):
+    def app_quit(self, widget=None, data=None):
         gtk.main_quit()
 
 
