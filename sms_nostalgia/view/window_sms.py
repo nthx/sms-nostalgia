@@ -23,14 +23,14 @@ class WindowSms(object):
         self.toolbar = self.create_toolbar()
         window.add_toolbar(self.toolbar)
 
-
-        #align = gtk.Alignment()
-
         self.label_name = gtk.Label("")
         self.label_phone = gtk.Label("")
         self.label_when = gtk.Label("")
+
         self.label_message = gtk.Label("")
         self.label_message.set_line_wrap(True)
+        self.label_message.set_property('wrap-mode', gtk.WRAP_WORD_CHAR)
+
         self.photo = gtk.Image()
         self.photo.set_alignment(0, 0)
         self.photo.set_padding(0, 0)
@@ -39,19 +39,39 @@ class WindowSms(object):
             label.set_alignment(0, 0)
 
         vbox = gtk.VBox(False, 0)
-        vbox.pack_start(self.label_name, False, False, 0)
-        vbox.pack_start(self.label_phone, False, False, 0)
-        vbox.pack_start(self.label_when, False, False, 0)
+        #vbox.pack_start(self.label_name, False, False, 0)
+        #vbox.pack_start(self.label_phone, False, False, 0)
+        #vbox.pack_start(self.label_when, False, False, 0)
         vbox.pack_start(self.photo, False, False, 0)
         vbox.pack_start(self.label_message, False, True, 0)
 
-        #align.add(vbox)
         pannable_area = hildon.PannableArea()
         pannable_area.add_with_viewport(vbox)
         window.add(pannable_area)
 
         window.connect("destroy", self.controller.sms_details_closed)
         return window
+
+
+    def _update_labels(self, sms):
+        has_face_icon = sms.contact and sms.contact.has_face_icon() or False
+        if has_face_icon:
+            self.photo.set_from_pixbuf(sms.contact.get_face_pixbuf_big())
+        else:
+            self.photo.clear()
+
+        #self.label_name.set_label(sms.display_name())
+        self.label_message.set_markup(sms.as_html())
+            
+        #self.label_phone.set_label(sms.phone)
+        #self.label_when.set_label(sms.when)
+        #self.label_message.set_label(sms.message)
+        #if sms.display_name() == sms.phone:
+            #self.label_name.hide()
+        #else:
+            #self.label_name.show()
+
+        self.window.set_title(sms.display_type())
 
 
     def create_toolbar(self):
@@ -71,25 +91,6 @@ class WindowSms(object):
         self.toolbar_prev.connect("clicked", lambda x: self.controller.load_prev_sms())
         self.toolbar_next.connect("clicked", lambda x: self.controller.load_next_sms())
         return toolbar
-
-
-    def _update_labels(self, sms):
-        has_icon = sms.contact and sms.contact.has_icon() or False
-        if has_icon:
-            self.photo.set_from_file(sms.contact.ico_path)
-        else:
-            self.photo.clear()
-
-        self.label_name.set_label(sms.display_name())
-        self.label_phone.set_label(sms.phone)
-        self.label_when.set_label(sms.when)
-        self.label_message.set_label(sms.message)
-        if sms.display_name() == sms.phone:
-            self.label_name.hide()
-        else:
-            self.label_name.show()
-
-        self.window.set_title(sms.display_type())
 
 
     def show_sms(self):

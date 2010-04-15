@@ -73,11 +73,8 @@ class WindowMain(object):
 
         def get_face_ico(column, cell, model, iter):
             sms = model.get_value(iter, 0)
-            has_icon = sms.contact and sms.contact.has_icon() or False
-            if has_icon:
-                cell.set_property('pixbuf', sms.contact.ico_pixbuf)
-            else:
-                cell.set_property('pixbuf', None)
+            pixbuf = sms.contact and sms.contact.get_face_pixbuf_small()
+            cell.set_property('pixbuf', pixbuf)
 
         def get_sms(column, cell, model, iter):
             sms = model.get_value(iter, 0)

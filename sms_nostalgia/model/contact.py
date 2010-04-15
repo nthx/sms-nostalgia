@@ -12,9 +12,10 @@ class Contact(object):
     def __init__(self, econtact):
         self.econtact = econtact
         self.vcard = None
-        self.has_ico = None
-        self.ico_path = None
-        self.ico_pixbuf = None
+        self.has_face_ico = None
+        self.face_ico_path = None
+        self.face_pixbuf_small = None
+        self.face_pixbuf_big = None
 
 
     def uuid(self):
@@ -55,18 +56,31 @@ class Contact(object):
                 yield phone
 
 
-    def has_icon(self):
-        if self.has_ico in (True, False):
-            return self.has_ico
+    def has_face_icon(self):
+        if self.has_face_ico in (True, False):
+            return self.has_face_ico
 
         for line in self.get_vcard().lines():
             if 'PHOTO' == line.name:
-                self.has_ico = True
-                self.ico_path = line.value.replace('file://', '')
-                #self.ico_pixbuf = gtk.gdk.pixbuf_new_from_file(self.ico_path)
-                self.ico_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(self.ico_path, 48, 48)
-                return self.has_ico
+                self.has_face_ico = True
+                self.face_ico_path = line.value.replace('file://', '')
+                self.face_pixbuf_small = gtk.gdk.pixbuf_new_from_file_at_size(self.face_ico_path, 48, 48)
+                return self.has_face_ico
 
-        self.has_ico = False
+        self.has_face_ico = False
+
+
+    def get_face_pixbuf_small(self):
+        if self.has_face_icon():
+            return self.face_pixbuf_small
+        return None
+
+
+    def get_face_pixbuf_big(self):
+        if self.has_face_icon():
+            if not self.face_pixbuf_big:
+                self.face_pixbuf_big = gtk.gdk.pixbuf_new_from_file_at_size(self.face_ico_path, 192, 192)
+            return self.face_pixbuf_big
+        return None
 
 
