@@ -27,6 +27,10 @@ class Sms(object):
         self.name = name
         self.when = when
         self.contact = None #Will be setup later if contact found in eBook
+        try:
+            self.when_dt = datetime.datetime.strptime(self.when, '%Y.%m.%d %H:%M')
+        except:
+            pass
 
 
     def display_name(self):
@@ -62,17 +66,28 @@ class Sms(object):
 
     
     def as_html(self):
-        when = self.when
-        try:
-            when = datetime.datetime.strptime(self.when, '%Y.%m.%d %H:%M')
-            when = when.strftime('%Y.%m.%d | %H:%M')
-        except Exception, e:
-            log.debug(e)
-            pass
+        when = self.when_dt and self.when_dt.strftime('%Y.%m.%d | %H:%M') or self.when
         return """\
 <span weight="bold">%s</span> <span size="x-small" weight="light" foreground="#BBBBBB"><sup>%s</sup></span>
 <span size="x-small" foreground="#BBBBBB">%s</span>""" \
             % (cgi.escape(self.display_name()), when, cgi.escape(self.message))
+
+    
+    def as_html_v2(self):
+        when = self.when_dt and self.when_dt.strftime('%Y.%m.%d | %H:%M') or self.when
+        phone_extra = ''
+        if self.name:
+            phone_extra = "<span>%s</span>\n" % self.phone
+        return """\
+<span weight="bold">%s</span> <span size="x-small" weight="light" foreground="#BBBBBB"><sup>%s</sup></span>
+%s<span size="x-small" foreground="#BBBBBB">%s</span>
+(also from this contact: %s)
+""" \
+            % (cgi.escape(self.display_name()), 
+               when, 
+               phone_extra,
+               cgi.escape(self.message), 
+               self.contact and len(self.contact.smses) or '')
 
     
     __str__ = as_text

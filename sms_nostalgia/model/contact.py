@@ -16,6 +16,7 @@ class Contact(object):
         self.face_ico_path = None
         self.face_pixbuf_small = None
         self.face_pixbuf_big = None
+        self.smses = []
 
 
     def uuid(self):
@@ -54,6 +55,11 @@ class Contact(object):
             phone = self.econtact.get_property(phone_attr)
             if phone: 
                 yield phone
+
+
+    def add_sms(self, sms):
+        sms.contact = self
+        self.smses.append(sms)
 
 
     def has_face_icon(self):

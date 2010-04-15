@@ -17,31 +17,21 @@ class WindowSms(object):
     
     def build(self):
         log.debug('building sms window..')
-
         window = hildon.StackableWindow()
-
         self.toolbar = self.create_toolbar()
         window.add_toolbar(self.toolbar)
-
-        self.label_name = gtk.Label("")
-        self.label_phone = gtk.Label("")
-        self.label_when = gtk.Label("")
 
         self.label_message = gtk.Label("")
         self.label_message.set_line_wrap(True)
         self.label_message.set_property('wrap-mode', gtk.WRAP_WORD_CHAR)
 
         self.photo = gtk.Image()
-        self.photo.set_alignment(0, 0)
-        self.photo.set_padding(0, 0)
 
-        for label in [self.label_name, self.label_phone, self.label_when, self.label_message]:
+        for label in [self.label_message, self.photo]:
             label.set_alignment(0, 0)
+            label.set_padding(0, 0)
 
         vbox = gtk.VBox(False, 0)
-        #vbox.pack_start(self.label_name, False, False, 0)
-        #vbox.pack_start(self.label_phone, False, False, 0)
-        #vbox.pack_start(self.label_when, False, False, 0)
         vbox.pack_start(self.photo, False, False, 0)
         vbox.pack_start(self.label_message, False, True, 0)
 
@@ -60,17 +50,7 @@ class WindowSms(object):
         else:
             self.photo.clear()
 
-        #self.label_name.set_label(sms.display_name())
-        self.label_message.set_markup(sms.as_html())
-            
-        #self.label_phone.set_label(sms.phone)
-        #self.label_when.set_label(sms.when)
-        #self.label_message.set_label(sms.message)
-        #if sms.display_name() == sms.phone:
-            #self.label_name.hide()
-        #else:
-            #self.label_name.show()
-
+        self.label_message.set_markup(sms.as_html_v2())
         self.window.set_title(sms.display_type())
 
 

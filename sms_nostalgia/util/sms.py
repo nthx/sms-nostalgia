@@ -57,13 +57,13 @@ def sms_parser_by_type(msg_type, sms_type, line):
 
 
 
-def retrieve_names_from_addressbook(smses):
+def link_contact_with_sms(smses):
     contacts_by_phone = ContactsAPI.group_by_phone()
     for sms in smses:
         if sms.phone in contacts_by_phone:
-            sms.contact = contacts_by_phone[sms.phone]
+            contact = contacts_by_phone[sms.phone]
+            contact.add_sms(sms)
             sms.name = sms.contact.name()
-    return smses
 
 
 def import_smses():
@@ -78,7 +78,7 @@ def import_smses():
     smses.extend(parse(os.path.join('data', 'inbox.csv')))
     smses.extend(parse(os.path.join('data', 'sent.csv')))
 
-    smses = retrieve_names_from_addressbook(smses)
+    link_contact_with_sms(smses)
 
     return smses
 
