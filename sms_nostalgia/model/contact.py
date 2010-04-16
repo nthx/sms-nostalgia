@@ -8,6 +8,7 @@ import gtk
 
 
 class Contact(object):
+    FACE_DEFAULT = gtk.gdk.pixbuf_new_from_file_at_size('/usr/share/icons/hicolor/48x48/hildon/general_default_avatar.png', 48, 48)
 
     def __init__(self, econtact):
         self.econtact = econtact
@@ -62,6 +63,10 @@ class Contact(object):
         self.smses.append(sms)
 
 
+    def sort_smses(self):
+        self.smses = sorted(self.smses, key=lambda sms: sms.when)
+
+
     def has_face_icon(self):
         if self.has_face_ico in (True, False):
             return self.has_face_ico
@@ -79,7 +84,7 @@ class Contact(object):
     def get_face_pixbuf_small(self):
         if self.has_face_icon():
             return self.face_pixbuf_small
-        return None
+        return self.FACE_DEFAULT
 
 
     def get_face_pixbuf_big(self):

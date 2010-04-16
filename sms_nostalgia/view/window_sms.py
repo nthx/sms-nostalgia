@@ -2,6 +2,8 @@ import logging, sys
 log = logging.getLogger(__name__)
 
 
+from sms_nostalgia.model.contact import Contact
+
 import gtk
 import hildon
 
@@ -18,8 +20,8 @@ class WindowSms(object):
     def build(self):
         log.debug('building sms window..')
         window = hildon.StackableWindow()
-        self.toolbar = self.create_toolbar()
-        window.add_toolbar(self.toolbar)
+        toolbar = self.create_toolbar()
+        window.add_toolbar(toolbar)
 
         self.label_message = gtk.Label("")
         self.label_message.set_line_wrap(True)
@@ -31,9 +33,14 @@ class WindowSms(object):
             label.set_alignment(0, 0)
             label.set_padding(0, 0)
 
+        self.other_smses = gtk.VBox(False, 0)
+
         vbox = gtk.VBox(False, 0)
         vbox.pack_start(self.photo, False, False, 0)
         vbox.pack_start(self.label_message, False, True, 0)
+        vbox.pack_start(self.other_smses, False, True, 0)
+
+        self.sms_box = vbox
 
         pannable_area = hildon.PannableArea()
         pannable_area.add_with_viewport(vbox)
@@ -44,14 +51,44 @@ class WindowSms(object):
 
 
     def _update_labels(self, sms):
-        has_face_icon = sms.contact and sms.contact.has_face_icon() or False
-        if has_face_icon:
+        self.window.set_title(sms.display_type())
+
+        if sms.contact:
             self.photo.set_from_pixbuf(sms.contact.get_face_pixbuf_big())
         else:
-            self.photo.clear()
+            self.photo.set_from_pixbuf(Contact.FACE_DEFAULT)
+            #self.photo.clear()
 
         self.label_message.set_markup(sms.as_html_v2())
-        self.window.set_title(sms.display_type())
+
+        self.sms_box.remove(self.other_smses)
+        self.other_smses = gtk.VBox(False, 0)
+
+        #self.other_smses.pack_start(gtk.Label('...'))
+        log.debug('smses: %s' % len(sms.other_smses()))
+        for other_sms in sorted(sms.other_smses(), key=lambda sms: sms.when, reverse=True):
+            other_sms_box = gtk.HBox()
+            sender_photo = gtk.Image()
+            if other_sms.received():
+                sender_photo.set_from_pixbuf(other_sms.contact.get_face_pixbuf_small())
+            elif other_sms.sent():
+                sender_photo.set_from_pixbuf(other_sms.get_type_ico())
+            else:
+                raise unknown()
+
+            sms_label = gtk.Label()
+            sms_label.set_markup(other_sms.as_html_as_other())
+            sms_label.set_line_wrap(True)
+            sms_label.set_property('wrap-mode', gtk.WRAP_WORD_CHAR)
+
+            for x in [sms_label, sender_photo]:
+                x.set_alignment(0, 0)
+                x.set_padding(0, 0)
+
+            other_sms_box.pack_start(sender_photo, False, True, 0)
+            other_sms_box.pack_start(sms_label, False, True, 0)
+            self.other_smses.pack_start(other_sms_box)
+        self.sms_box.pack_start(self.other_smses, False, True, 0)
 
 
     def create_toolbar(self):
@@ -77,18 +114,8 @@ class WindowSms(object):
         sms = self.controller.current_sms
         log.debug(sms.as_text())
 
-        if self.window:
-            self._update_labels(sms)
-
-        else:
+        if not self.window:
             self.window = self.build()
-            self._update_labels(sms)
-
-            self.window.show_all()
-
-
-
-
-
-
+        self._update_labels(sms)
+        self.window.show_all()
 

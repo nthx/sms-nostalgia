@@ -64,21 +64,21 @@ def link_contact_with_sms(smses):
             contact = contacts_by_phone[sms.phone]
             contact.add_sms(sms)
             sms.name = sms.contact.name()
+            yield contact
 
 
 def import_smses():
     """
     @returns all smses (Inbox + Sent)
     """
-
     log.debug('importing sms..')
-
 
     smses = []
     smses.extend(parse(os.path.join('data', 'inbox.csv')))
     smses.extend(parse(os.path.join('data', 'sent.csv')))
 
-    link_contact_with_sms(smses)
-
+    contacts = link_contact_with_sms(smses)
+    for contact in contacts:
+        contact.sort_smses()
     return smses
 

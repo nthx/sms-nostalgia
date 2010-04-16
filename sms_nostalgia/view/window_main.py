@@ -70,15 +70,18 @@ class WindowMain(object):
         def get_type_ico(column, cell, model, iter):
             sms = model.get_value(iter, 0)
             cell.set_property('pixbuf', sms.get_type_ico())
+            cell.set_property('width', 52)
 
         def get_face_ico(column, cell, model, iter):
             sms = model.get_value(iter, 0)
             pixbuf = sms.contact and sms.contact.get_face_pixbuf_small()
             cell.set_property('pixbuf', pixbuf)
+            cell.set_property('width', 52)
 
         def get_sms(column, cell, model, iter):
             sms = model.get_value(iter, 0)
             cell.set_property('markup', sms.as_html())
+            cell.set_property('wrap-mode', gtk.WRAP_WORD_CHAR)
 
 
         state_rend = gtk.CellRendererPixbuf()

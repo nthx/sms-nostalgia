@@ -53,6 +53,10 @@ class Sms(object):
         return self.type == self.TYPE_INBOX
 
 
+    def other_smses(self):
+        return self.contact and self.contact.smses or []
+
+
     def matches(self, text):
         text = text and text.lower() or ''
         return text in (self.phone and self.phone or '')\
@@ -62,7 +66,7 @@ class Sms(object):
 
 
     def as_text(self):
-        return '%s: n%s' % (self.display_name(), self.message)
+        return '%s: %s' % (self.display_name(), self.message)
 
     
     def as_html(self):
@@ -73,21 +77,27 @@ class Sms(object):
             % (cgi.escape(self.display_name()), when, cgi.escape(self.message))
 
     
+    def as_html_as_other(self):
+        when = self.when_dt and self.when_dt.strftime('%Y.%m.%d | %H:%M') or self.when
+        return """\
+<span size="small" weight="bold">%s</span>
+<span size="small" foreground="#BBBBBB">%s</span>""" \
+            % (when, cgi.escape(self.message))
+
+    
     def as_html_v2(self):
         when = self.when_dt and self.when_dt.strftime('%Y.%m.%d | %H:%M') or self.when
         phone_extra = ''
         if self.name:
             phone_extra = "<span>%s</span>\n" % self.phone
         return """\
-<span weight="bold">%s</span> <span size="x-small" weight="light" foreground="#BBBBBB"><sup>%s</sup></span>
-%s<span size="x-small" foreground="#BBBBBB">%s</span>
-(also from this contact: %s)
+<span weight="bold">%s</span> <span size="small" weight="light" foreground="#BBBBBB"><sup>%s</sup></span>
+%s<span size="small" foreground="#BBBBBB">%s</span>
 """ \
             % (cgi.escape(self.display_name()), 
                when, 
                phone_extra,
-               cgi.escape(self.message), 
-               self.contact and len(self.contact.smses) or '')
+               cgi.escape(self.message))
 
     
     __str__ = as_text
